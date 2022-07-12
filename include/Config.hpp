@@ -86,7 +86,7 @@ namespace Config {
         auto it = _configMap.find(name);
         if (it != _configMap.end()) {
             auto& values = it->second;
-            values.resize((std::max)(index, values.size()));
+            values.resize((std::max)(index + 1, values.size()));
             return std::get<T>(values.at(index));
         }
         else return File::Set(name, defaultValue, index);
@@ -96,7 +96,7 @@ namespace Config {
     inline T File::Set(const std::string& name, const T value, const size_t index)
     {
         auto& values = _configMap[name];
-        values.resize((std::max)(index, values.size()));
+        values.resize((std::max)(index + 1, values.size()));
         return std::get<T>(values.at(index) = value);
     }
 }
