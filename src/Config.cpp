@@ -27,7 +27,7 @@ namespace Config
                     }
                     catch (std::exception &)
                     {
-                        _configMap[words.at(0)].emplace_back(i);
+                        _configMap[words.at(0)].emplace_back(words.at(i));
                     }
                 }
             }
