@@ -18,12 +18,12 @@ namespace Config
          * @brief Loads the Config from the specified file, invalid values will be ignored (set to default value) but setting keys will still be registered
          * @param path the absolute path to the config file
          */
-        void Parse(const std::filesystem::path path);
+        void Parse(const std::filesystem::path &path);
         /**
          * @brief Saves this Config to the specified file
          * @param path the absolute path to the file this Config is to be saved to
          */
-        void Save(const std::filesystem::path path);
+        void Save(const std::filesystem::path &path);
         /**
          * @brief Tries to get the specified setting, set it to the default value if not found
          * @tparam T the type that we expect
