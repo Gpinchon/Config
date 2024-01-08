@@ -7,10 +7,12 @@
 #include <algorithm>
 
 /**
-* This is the common configuration between APIs
-*/
-namespace Config {
-    class File {
+ * This is the common configuration between APIs
+ */
+namespace Config
+{
+    class File
+    {
     public:
         /**
          * @brief Loads the Config from the specified file, invalid values will be ignored (set to default value) but setting keys will still be registered
@@ -31,7 +33,7 @@ namespace Config {
          * @return the value of the setting specified by name
          */
         template <typename T>
-        T Get(const std::string& name, const T defaultValue, const size_t index = 0);
+        T Get(const std::string &name, const T defaultValue, const size_t index = 0);
         /**
          * @brief Sets the specified setting to the specified value
          * @tparam T the type of this setting
@@ -41,61 +43,63 @@ namespace Config {
          * @return the new value of the setting specified by name
          */
         template <typename T>
-        T Set(const std::string& name, const T value, const size_t index = 0);
+        T Set(const std::string &name, const T value, const size_t index = 0);
 
     private:
         typedef std::variant<double, std::string> value_type;
         std::map<std::string, std::vector<value_type>> _configMap;
     };
 
-    File& Global();
+    File &Global();
 
     template <>
-    inline float File::Get<float>(const std::string& name, const float defaultValue, const size_t index)
+    inline float File::Get<float>(const std::string &name, const float defaultValue, const size_t index)
     {
         return float(Get<double>(name, double(defaultValue), index));
     }
 
     template <>
-    inline short File::Get<short>(const std::string& name, const short defaultValue, const size_t index)
+    inline short File::Get<short>(const std::string &name, const short defaultValue, const size_t index)
     {
         return short(Get<double>(name, double(defaultValue), index));
     }
 
     template <>
-    inline unsigned short File::Get<unsigned short>(const std::string& name, const unsigned short defaultValue, const size_t index)
+    inline unsigned short File::Get<unsigned short>(const std::string &name, const unsigned short defaultValue, const size_t index)
     {
-        return unsigned short(Get<double>(name, double(defaultValue), index));
+        return (unsigned short)(Get<double>(name, double(defaultValue), index));
     }
 
     template <>
-    inline int File::Get<int>(const std::string& name, const int defaultValue, const size_t index)
+    inline int File::Get<int>(const std::string &name, const int defaultValue, const size_t index)
     {
         return int(Get<double>(name, double(defaultValue), index));
     }
 
     template <>
-    inline unsigned File::Get<unsigned>(const std::string& name, const unsigned defaultValue, const size_t index)
+    inline unsigned File::Get<unsigned>(const std::string &name, const unsigned defaultValue, const size_t index)
     {
         return unsigned(Get<double>(name, double(defaultValue), index));
     }
 
     template <typename T>
-    inline T File::Get(const std::string& name, const T defaultValue, const size_t index)
+    inline T File::Get(const std::string &name, const T defaultValue, const size_t index)
     {
         auto it = _configMap.find(name);
-        if (it != _configMap.end()) {
-            auto& values = it->second;
+        if (it != _configMap.end())
+        {
+            auto &values = it->second;
             values.resize((std::max)(index + 1, values.size()));
             return std::get<T>(values.at(index));
         }
-        else return File::Set(name, defaultValue, index);
+        else
+            return File::Set(name, defaultValue, index);
     }
 
     template <typename T>
-    inline T File::Set(const std::string& name, const T value, const size_t index)
+    inline T File::Set(const std::string &name, const T value, const size_t index)
     {
-        auto& values = _configMap[name];
+        auto &values = _configMap[name];
         values.resize((std::max)(index + 1, values.size()));
         return std::get<T>(values.at(index) = value);
     }
