@@ -18,7 +18,7 @@ namespace Config
                 std::istream_iterator<std::string>());
             if (words.size() > 2 && words.at(1) == "=")
             {
-                for (auto i = 0u; i < words.size(); ++i)
+                for (auto i = 2u; i < words.size(); ++i)
                 {
                     try
                     {
