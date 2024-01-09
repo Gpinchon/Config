@@ -24,66 +24,71 @@ namespace Config
          * @param path the absolute path to the file this Config is to be saved to
          */
         void Save(const std::filesystem::path &path);
+
         /**
          * @brief Tries to get the specified setting, set it to the default value if not found
-         * @tparam T the type that we expect
          * @param name the name of the setting
          * @param defaultValue the default value the setting is to be set to if it is non-existent
          * @param index the index to query, default is zero
          * @return the value of the setting specified by name
          */
-        template <typename T>
-        T Get(const std::string &name, const T defaultValue, const size_t index = 0);
+        std::string Get(const std::string &name, const std::string &defaultValue, const size_t index = 0);
+        /**
+         * @brief Tries to get the specified setting, set it to the default value if not found
+         * @param name the name of the setting
+         * @param defaultValue the default value the setting is to be set to if it is non-existent
+         * @param index the index to query, default is zero
+         * @return the value of the setting specified by name
+         */
+        double Get(const std::string &name, const double &defaultValue, const size_t index = 0);
+
         /**
          * @brief Sets the specified setting to the specified value
-         * @tparam T the type of this setting
          * @param name the name of the setting to set
          * @param value the value the setting is to be set to
          * @param index the index to set, default is zero
          * @return the new value of the setting specified by name
          */
-        template <typename T>
-        T Set(const std::string &name, const T value, const size_t index = 0);
+        std::string Set(const std::string &name, const std::string &value, const size_t index = 0);
+        /**
+         * @brief Sets the specified setting to the specified value
+         * @param name the name of the setting to set
+         * @param value the value the setting is to be set to
+         * @param index the index to set, default is zero
+         * @return the new value of the setting specified by name
+         */
+        double Set(const std::string &name, const double &value, const size_t index = 0);
 
     private:
-        typedef std::variant<double, std::string> value_type;
-        std::map<std::string, std::vector<value_type>> _configMap;
+        template <typename T>
+        T _Get(const std::string &name, const T &value, const size_t index);
+        template <typename T>
+        T _Set(const std::string &name, const T &value, const size_t index);
+        using value_type = std::variant<double, std::string>;
+        std::map<std::string, std::vector<value_type>, std::less<>> _configMap;
     };
 
     File &Global();
 
-    template <>
-    inline float File::Get<float>(const std::string &name, const float defaultValue, const size_t index)
+    template <typename T>
+    inline T File::_Set(const std::string &name, const T &value, const size_t index)
     {
-        return float(Get<double>(name, double(defaultValue), index));
+        auto &values = _configMap[name];
+        values.resize((std::max)(index + 1, values.size()));
+        values.at(index) = value;
+        return std::get<T>(values.at(index));
     }
-
-    template <>
-    inline short File::Get<short>(const std::string &name, const short defaultValue, const size_t index)
+    inline double File::Set(const std::string &name, const double &value, const size_t index)
     {
-        return short(Get<double>(name, double(defaultValue), index));
+        return _Set(name, value, index);
     }
-
-    template <>
-    inline unsigned short File::Get<unsigned short>(const std::string &name, const unsigned short defaultValue, const size_t index)
+    inline std::string File::Set(const std::string &name, const std::string &value, const size_t index)
     {
-        return (unsigned short)(Get<double>(name, double(defaultValue), index));
-    }
-
-    template <>
-    inline int File::Get<int>(const std::string &name, const int defaultValue, const size_t index)
-    {
-        return int(Get<double>(name, double(defaultValue), index));
-    }
-
-    template <>
-    inline unsigned File::Get<unsigned>(const std::string &name, const unsigned defaultValue, const size_t index)
-    {
-        return unsigned(Get<double>(name, double(defaultValue), index));
+        return _Set(name, value, index);
     }
 
     template <typename T>
-    inline T File::Get(const std::string &name, const T defaultValue, const size_t index)
+    inline T File::_Get(const std::string &name, const T &defaultValue, const size_t index)
     {
         auto it = _configMap.find(name);
         if (it != _configMap.end())
@@ -95,12 +100,12 @@ namespace Config
         else
             return File::Set(name, defaultValue, index);
     }
-
-    template <typename T>
-    inline T File::Set(const std::string &name, const T value, const size_t index)
+    inline double File::Get(const std::string &name, const double &defaultValue, const size_t index)
     {
-        auto &values = _configMap[name];
-        values.resize((std::max)(index + 1, values.size()));
-        return std::get<T>(values.at(index) = value);
+        return _Get(name, defaultValue, index);
+    }
+    inline std::string File::Get(const std::string &name, const std::string &defaultValue, const size_t index)
+    {
+        return _Get(name, defaultValue, index);
     }
 }
