@@ -5,7 +5,9 @@ project(Config LANGUAGES CXX)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_RELEASE "-Ox")
+if(MSVC_IDE)
+  set(CMAKE_CXX_FLAGS_RELEASE "-Ox")
+endif()
 
 include(cmake-tools/GroupSources.cmake)
 
